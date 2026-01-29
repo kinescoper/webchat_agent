@@ -141,6 +141,8 @@
       if (el) el.remove();
     }
 
+    appendMessage('assistant', 'Привет! Задавайте любые вопросы по базе знаний Kinescope - я помогу.');
+
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const message = input.value.trim();
