@@ -141,7 +141,38 @@
       if (el) el.remove();
     }
 
-    appendMessage('assistant', 'Привет! Задавайте любые вопросы по базе знаний Kinescope - я помогу.');
+    function formatWithLinks(text) {
+      return text.replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>')
+        .replace(/https?:\/\/[^\s<]+/g, '<a href="$&" target="_blank" rel="noopener">$&</a>');
+    }
+
+    function appendStreamingMessage() {
+      const div = document.createElement('div');
+      div.className = 'msg assistant';
+      const inner = document.createElement('div');
+      div.appendChild(inner);
+      messagesEl.appendChild(div);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+      return inner;
+    }
+
+    function typewriterIntoAssistant(text, delayMs) {
+      const inner = appendStreamingMessage();
+      let i = 0;
+      const step = () => {
+        if (i < text.length) {
+          inner.textContent = text.slice(0, i + 1);
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+          i++;
+          setTimeout(step, delayMs);
+        } else {
+          inner.innerHTML = formatWithLinks(text);
+        }
+      };
+      setTimeout(step, delayMs || 25);
+    }
+
+    typewriterIntoAssistant('Привет! Задавайте любые вопросы по базе знаний Kinescope - я помогу.', 28);
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
@@ -152,18 +183,64 @@
       sendBtn.disabled = true;
       appendTypingIndicator();
       try {
-        const res = await fetch('/chat', {
+        let res = await fetch('/chat/stream', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message }),
         });
-        const data = await res.json().catch(() => ({}));
+        if (res.status === 404) {
+          res = await fetch('/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message }),
+          });
+          removeTypingIndicator();
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) {
+            appendMessage('assistant', 'Ошибка: ' + (data.detail || res.statusText), true);
+            return;
+          }
+          appendMessage('assistant', data.reply || '');
+          return;
+        }
         removeTypingIndicator();
         if (!res.ok) {
+          const data = await res.json().catch(() => ({}));
           appendMessage('assistant', 'Ошибка: ' + (data.detail || res.statusText), true);
           return;
         }
-        appendMessage('assistant', data.reply || '');
+        const inner = appendStreamingMessage();
+        let acc = '';
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buf = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          const lines = buf.split('\n');
+          buf = lines.pop() || '';
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const obj = JSON.parse(line.slice(6));
+                if (obj.error) {
+                  inner.textContent = 'Ошибка: ' + obj.error;
+                  inner.parentElement.classList.add('error');
+                  break;
+                }
+                if (obj.delta) {
+                  acc += obj.delta;
+                  inner.textContent = acc;
+                  messagesEl.scrollTop = messagesEl.scrollHeight;
+                }
+              } catch (_) {}
+            }
+          }
+        }
+        if (acc && !inner.parentElement.classList.contains('error')) {
+          inner.innerHTML = formatWithLinks(acc);
+        }
       } catch (err) {
         removeTypingIndicator();
         appendMessage('assistant', 'Ошибка сети: ' + err.message, true);

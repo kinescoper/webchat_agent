@@ -13,9 +13,11 @@ from dotenv import load_dotenv
 
 load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
+import json
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from pydantic import BaseModel
 
 from backend.prompts import SYSTEM_PROMPT_TEMPLATE
@@ -44,8 +46,7 @@ class ChatResponse(BaseModel):
     reply: str
 
 
-def _call_llm(system_content: str, user_message: str) -> str:
-    """Вызов OpenAI-совместимого Chat API."""
+def _get_openai_client() -> Any:
     try:
         from openai import OpenAI
     except ImportError:
@@ -58,7 +59,12 @@ def _call_llm(system_content: str, user_message: str) -> str:
         client_kw["base_url"] = LLM_API_BASE_URL
     if LLM_API_KEY:
         client_kw["api_key"] = LLM_API_KEY
-    client = OpenAI(**client_kw)
+    return OpenAI(**client_kw)
+
+
+def _call_llm(system_content: str, user_message: str) -> str:
+    """Вызов OpenAI-совместимого Chat API."""
+    client = _get_openai_client()
     messages = [
         {"role": "system", "content": system_content},
         {"role": "user", "content": user_message},
@@ -71,6 +77,24 @@ def _call_llm(system_content: str, user_message: str) -> str:
     if not choice or not getattr(choice, "message", None):
         raise HTTPException(status_code=502, detail="Пустой ответ от LLM")
     return (choice.message.content or "").strip()
+
+
+def _stream_llm(system_content: str, user_message: str):
+    """Стриминг ответа LLM (SSE: data: {"delta": "..."})."""
+    client = _get_openai_client()
+    messages = [
+        {"role": "system", "content": system_content},
+        {"role": "user", "content": user_message},
+    ]
+    stream = client.chat.completions.create(
+        model=LLM_MODEL,
+        messages=messages,
+        stream=True,
+    )
+    for chunk in stream:
+        delta = chunk.choices[0].delta if chunk.choices else None
+        if delta and getattr(delta, "content", None):
+            yield f"data: {json.dumps({'delta': delta.content}, ensure_ascii=False)}\n\n"
 
 
 # Заключительные фразы-шаблоны (удаляем перед отдачей, чтобы ответ был в стиле Cursor)
@@ -117,6 +141,29 @@ def chat(request: ChatRequest) -> ChatResponse:
         raise HTTPException(status_code=502, detail=f"Ошибка вызова LLM: {e}")
     reply = _clean_reply(reply)
     return ChatResponse(reply=reply)
+
+
+@app.post("/chat/stream")
+def chat_stream(request: ChatRequest) -> StreamingResponse:
+    """Стриминг ответа (SSE). Для плавного появления текста в чате."""
+    message = (request.message or "").strip()
+    if not message:
+        raise HTTPException(status_code=400, detail="Укажите message")
+    rag_text = rag_search(message)
+    system_content = SYSTEM_PROMPT_TEMPLATE.replace("{{RAG_CONTEXT}}", rag_text)
+
+    def generate() -> Any:
+        try:
+            for chunk in _stream_llm(system_content, message):
+                yield chunk
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)}, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(
+        generate(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 
 @app.get("/health")
