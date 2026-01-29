@@ -1,0 +1,20 @@
+# Не попадают в образ Docker
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+*.pyc
+__pycache__
+.venv
+venv
+docs_crawl
+qdrant_storage
+.cursor
+*.md
+!README-WEB.md
+mcp_server
+scripts/__pycache__
+scripts/*.json
+.cursor
+*.plan.md

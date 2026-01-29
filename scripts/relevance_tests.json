@@ -1,0 +1,298 @@
+{
+  "description": "Типовые запросы и ожидаемые источники для проверки релевантности поиска",
+  "params": {
+    "limit_first": 20,
+    "limit_final": 5,
+    "rerank_alpha": 0.35
+  },
+  "tests": [
+    {
+      "id": "subtitles",
+      "query": "Как настроить субтитры к видео?",
+      "expected_section_contains": "vzaimodeystvie-s-faylami-subtitry",
+      "expected_in_top": 5
+    },
+    {
+      "id": "drm",
+      "query": "Как работает DRM?",
+      "expected_section_contains": "drm-shifrovanie",
+      "expected_in_top": 5
+    },
+    {
+      "id": "embed",
+      "query": "Как встроить плеер на сайт?",
+      "expected_section_contains": "sozdanie-pervogo-proekta",
+      "expected_in_top": 5
+    },
+    {
+      "id": "zoom",
+      "query": "Интеграция Kinescope с Zoom",
+      "expected_section_contains": "instruktsii-po-nastroyke-translyatsiy",
+      "expected_in_top": 5
+    },
+    {
+      "id": "domain_restrict",
+      "query": "Как ограничить доступ к видео по домену?",
+      "expected_section_contains": "ogranichenie-dostupa-k-video",
+      "expected_in_top": 5
+    },
+    {
+      "id": "auth_backend",
+      "query": "Что такое авторизационный бэкенд для доступа к видео?",
+      "expected_section_contains": "avtorizatsionnyy-bekend",
+      "expected_in_top": 5
+    },
+    {
+      "id": "analitika",
+      "query": "Аналитика просмотров видео",
+      "expected_section_contains": "analitika",
+      "expected_in_top": 7
+    },
+    {
+      "id": "pleylisty",
+      "query": "Как создать плейлист?",
+      "expected_section_contains": "pleylisty",
+      "expected_in_top": 5
+    },
+    {
+      "id": "watermarks",
+      "query": "Водяные знаки на видео",
+      "expected_section_contains": "vodyanye-znaki",
+      "expected_in_top": 5
+    },
+    {
+      "id": "migration",
+      "query": "Миграция с другой платформы на Kinescope",
+      "expected_section_contains": "migratsiya-s-drugih-platform",
+      "expected_in_top": 5
+    },
+    {
+      "id": "faq",
+      "query": "Частые вопросы по началу работы с Kinescope",
+      "expected_section_contains": "chastye-voprosy",
+      "expected_in_top": 5
+    },
+    {
+      "id": "kinescope_api",
+      "query": "Kinescope API документация",
+      "expected_section_contains": "kinescope-api",
+      "expected_in_top": 5
+    },
+    {
+      "id": "upload_api",
+      "query": "Загрузка файлов через API",
+      "expected_section_contains": "zagruzka-faylov-cherez-api",
+      "expected_in_top": 5
+    },
+    {
+      "id": "webhooks",
+      "query": "Вебхуки Kinescope",
+      "expected_section_contains": "tipy-vebhukov",
+      "expected_in_top": 5
+    },
+    {
+      "id": "getcourse",
+      "query": "Интеграция Kinescope GetCourse встраивание видео в уроки",
+      "expected_section_contains": "integratsiya-s-getcourse",
+      "expected_in_top": 5
+    },
+    {
+      "id": "sso",
+      "query": "Настройка входа по SSO",
+      "expected_section_contains": "nastroyka-vhoda-po-sso",
+      "expected_in_top": 15
+    },
+    {
+      "id": "mediateka",
+      "query": "Организация медиатеки и каталога",
+      "expected_section_contains": "organizatsiya-mediateki",
+      "expected_in_top": 7
+    },
+    {
+      "id": "korzina",
+      "query": "Корзина удалённых файлов",
+      "expected_section_contains": "korzina",
+      "expected_in_top": 5
+    },
+    {
+      "id": "restriming",
+      "query": "Рестриминг RTMP передача потока на YouTube VK",
+      "expected_section_contains": "restriming",
+      "expected_in_top": 5
+    },
+    {
+      "id": "translation_guide",
+      "query": "Руководство по проведению трансляций",
+      "expected_section_contains": "rukovodstvo-po-provedeniyu-translyatsiy",
+      "expected_in_top": 5
+    },
+    {
+      "id": "team_roles",
+      "query": "Управление правами доступа в команде",
+      "expected_section_contains": "upravlenie-pravami-dostupa",
+      "expected_in_top": 10
+    },
+    {
+      "id": "player_custom",
+      "query": "Кастомизация плеера",
+      "expected_section_contains": "kastomizatsiya-pleera",
+      "expected_in_top": 7
+    },
+    {
+      "id": "iframe_api",
+      "query": "IFrame Player API",
+      "expected_section_contains": "iframe-player-api",
+      "expected_in_top": 5
+    },
+    {
+      "id": "ads",
+      "query": "Реклама в плеере",
+      "expected_section_contains": "reklama",
+      "expected_in_top": 5
+    },
+    {
+      "id": "support",
+      "query": "Диагностика и обращение в техподдержку Kinescope",
+      "expected_section_contains": "diagnostika-i-podderzhka",
+      "expected_in_top": 15
+    },
+    {
+      "id": "troubleshoot",
+      "query": "Как решить проблемы с видео?",
+      "expected_section_contains": "kak-reshit-problemy",
+      "expected_in_top": 10
+    },
+    {
+      "id": "kinescope_mcp",
+      "query": "Kinescope MCP Server настройка",
+      "expected_section_contains": "kinescope-mcp-server",
+      "expected_in_top": 7
+    },
+    {
+      "id": "tarify",
+      "query": "Тарифы Kinescope как выбрать",
+      "expected_section_contains": "tarify-kinescope-kak-vybrat",
+      "expected_in_top": 5
+    },
+    {
+      "id": "speak",
+      "query": "Что такое Speak в Kinescope?",
+      "expected_section_contains": "chto-takoe-speak",
+      "expected_in_top": 5
+    },
+    {
+      "id": "diagnostika",
+      "query": "Диагностика и поддержка Kinescope",
+      "expected_section_contains": "diagnostika-i-podderzhka",
+      "expected_in_top": 5
+    },
+    {
+      "id": "ip_addresses",
+      "query": "IP адреса Kinescope для firewall",
+      "expected_section_contains": "ip-adresa-kinescope",
+      "expected_in_top": 5
+    },
+    {
+      "id": "api_rules",
+      "query": "Общие правила работы с API",
+      "expected_section_contains": "api-obshchie-pravila",
+      "expected_in_top": 15
+    },
+    {
+      "id": "jwt_chat",
+      "query": "JWT аутентификация для чата трансляций",
+      "expected_section_contains": "jwt-autentifikatsiya-dlya-chata",
+      "expected_in_top": 5
+    },
+    {
+      "id": "player_sdk",
+      "query": "Kinescope Player SDK документация",
+      "expected_section_contains": "kinescope-player-sdk",
+      "expected_in_top": 5
+    },
+    {
+      "id": "bizon365",
+      "query": "Интеграция Kinescope с Bizon365",
+      "expected_section_contains": "integratsiya-s-bizon365",
+      "expected_in_top": 5
+    },
+    {
+      "id": "hugo",
+      "query": "Встраивание видео Kinescope в Hugo",
+      "expected_section_contains": "integratsiya-s-hugo",
+      "expected_in_top": 15
+    },
+    {
+      "id": "zoom_integration",
+      "query": "Интеграция с Zoom подключение",
+      "expected_section_contains": "integratsiya-s-zoom",
+      "expected_in_top": 5
+    },
+    {
+      "id": "tilda",
+      "query": "Встраивание плеера на Tilda",
+      "expected_section_contains": "vstraivanie-na-tilda",
+      "expected_in_top": 5
+    },
+    {
+      "id": "wordpress",
+      "query": "Встраивание Kinescope на WordPress",
+      "expected_section_contains": "vstraivanie-na-wordpress",
+      "expected_in_top": 5
+    },
+    {
+      "id": "media_settings",
+      "query": "Основные настройки медиафайлов",
+      "expected_section_contains": "osnovnye-nastroyki-mediafaylov",
+      "expected_in_top": 5
+    },
+    {
+      "id": "catalog_search",
+      "query": "Как искать файлы и фильтры в каталоге Kinescope",
+      "expected_section_contains": "poisk-po-katalogu",
+      "expected_in_top": 5
+    },
+    {
+      "id": "advanced_upload",
+      "query": "Продвинутая загрузка файлов",
+      "expected_section_contains": "prodvinutaya-zagruzka-faylov",
+      "expected_in_top": 5
+    },
+    {
+      "id": "mcp_faq",
+      "query": "Часто задаваемые вопросы по Kinescope MCP",
+      "expected_section_contains": "chasto-zadavaemye-voprosy",
+      "expected_in_top": 5
+    },
+    {
+      "id": "mcp_examples",
+      "query": "Примеры использования Kinescope MCP",
+      "expected_section_contains": "primery-ispolzovaniya",
+      "expected_in_top": 5
+    },
+    {
+      "id": "profile_settings",
+      "query": "Настройки профиля и рабочей зоны",
+      "expected_section_contains": "nastroyki-profilya-i-rabochey-zony",
+      "expected_in_top": 5
+    },
+    {
+      "id": "edo",
+      "query": "Что такое ЭДО электронный документооборот",
+      "expected_section_contains": "chto-takoe-edo",
+      "expected_in_top": 5
+    },
+    {
+      "id": "embed_player",
+      "query": "Встраивание видеоплеера на сайт",
+      "expected_section_contains": "vstraivanie",
+      "expected_in_top": 5
+    },
+    {
+      "id": "har_browser",
+      "query": "Сохранение взаимодействия браузера в HAR файл",
+      "expected_section_contains": "sohranenie-vzaimodeystviya-brauzera",
+      "expected_in_top": 5
+    }
+  ]
+}

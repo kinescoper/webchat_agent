@@ -1,0 +1,8 @@
+# Веб-бэкенд: чат с RAG и внешней LLM
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+openai>=1.0.0
+python-dotenv>=1.0.0
+# RAG и эмбеддинг (те же, что у MCP)
+fastembed>=0.2.0
+qdrant-client>=1.7.0

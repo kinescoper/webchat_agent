@@ -1,0 +1,9 @@
+docs_crawl/
+.env
+.env.local
+qdrant_storage/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.plan.md

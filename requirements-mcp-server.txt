@@ -1,0 +1,4 @@
+# MCP server для поиска в Qdrant (возвращает только text, без document)
+mcp>=1.0.0
+fastembed>=0.2.0
+qdrant-client>=1.7.0

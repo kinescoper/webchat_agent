@@ -1,0 +1,30 @@
+{
+  "_comment": "Конфиг MCP-сервера Qdrant, сформирован по данным API http://localhost:6333",
+  "_api_collections": ["claude-memories", "papers"],
+  "_papers_collection": {
+    "points_count": 610,
+    "vector_size": 384,
+    "distance": "Cosine",
+    "payload_schema": ["section", "source"]
+  },
+  "mcpServers": {
+    "qdrant": {
+      "command": "uvx",
+      "args": ["mcp-server-qdrant"],
+      "env": {
+        "QDRANT_URL": "http://localhost:6333",
+        "COLLECTION_NAME": "papers",
+        "EMBEDDING_MODEL": "sentence-transformers/all-MiniLM-L6-v2"
+      }
+    }
+  },
+  "optional_env": {
+    "QDRANT_API_KEY": "если Qdrant за аутентификацией",
+    "COLLECTION_NAME_alt": "claude-memories — вторая коллекция",
+    "LIMIT_FIRST": "сколько кандидатов тянуть из Qdrant (по умолчанию 20)",
+    "LIMIT_FINAL": "сколько отдавать после ре-ранжирования (по умолчанию 5)",
+    "RERANK_ALPHA": "баланс vector/keyword: alpha * vector_score + (1-alpha) * keyword_score (по умолчанию 0.7)",
+    "CACHE_MAX_SIZE": "размер LRU-кэша эмбеддингов запросов (по умолчанию 200)",
+    "USE_CROSS_ENCODER": "1/true/yes — ре-ранжировать кросс-энкодером (нужен sentence-transformers)"
+  }
+}
