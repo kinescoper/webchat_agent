@@ -181,7 +181,7 @@
       flex: 1;
       min-width: 0;
       width: 100%;
-      padding: 0.85rem 3.25rem 0.85rem 1rem;
+      padding: 0.85rem 6rem 0.85rem 1rem;
       font-size: 16px;
       font-family: inherit;
       border: none;
@@ -194,10 +194,15 @@
     }
     #input::placeholder { color: #52525b; }
     #input:focus { outline: none; }
-    #send {
+    .input-actions {
       position: absolute;
       right: 0.6rem;
       bottom: 0.6rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    #send {
       width: 2.25rem;
       height: 2.25rem;
       padding: 0;
@@ -221,6 +226,30 @@
     .input-wrap.has-text #send:hover { opacity: 0.95; }
     #send:hover:not(:disabled) { opacity: 0.9; }
     #send:disabled { opacity: 0.5; cursor: not-allowed; }
+    .backend-select {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-right: 0.5rem;
+      flex-shrink: 0;
+    }
+    .backend-select label {
+      font-size: 0.75rem;
+      color: #71717a;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .backend-select select {
+      font-size: 0.8125rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 8px;
+      border: 1px solid #1f1f23;
+      background: #0c0c0e;
+      color: #e4e4e7;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .backend-select select:focus { outline: none; border-color: #6D559E; }
     .error { color: #f87171; }
 
     .msg.typing { min-height: 2.5rem; }
@@ -274,7 +303,16 @@
   <form id="form">
     <div class="input-wrap" id="input-wrap">
       <textarea id="input" placeholder="Спросите что угодно..." autocomplete="off" rows="1" autofocus></textarea>
-      <button type="submit" id="send" aria-label="Отправить">&#8593;</button>
+      <div class="input-actions">
+        <div class="backend-select">
+          <label for="backend">Модель:</label>
+          <select id="backend" name="backend" aria-label="Выбор модели">
+            <option value="qdrant" selected>Qdrant</option>
+            <option value="algolia">Algolia</option>
+          </select>
+        </div>
+        <button type="submit" id="send" aria-label="Отправить">&#8593;</button>
+      </div>
     </div>
   </form>
   <script>
@@ -283,7 +321,12 @@
     const form = document.getElementById('form');
     const input = document.getElementById('input');
     const sendBtn = document.getElementById('send');
+    const backendSelect = document.getElementById('backend');
     const welcomeSuggestions = document.getElementById('welcome-suggestions');
+
+    function getBackend() {
+      return (backendSelect && backendSelect.value) ? backendSelect.value : 'qdrant';
+    }
 
     function hideWelcomeSuggestions() {
       if (welcomeSuggestions && !welcomeSuggestions.classList.contains('hidden')) {
@@ -395,17 +438,19 @@
     });
 
     async function fetchAndStream(message) {
+      const backend = getBackend();
+      const body = { message, backend };
       try {
         let res = await fetch('/chat/stream', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message }),
+          body: JSON.stringify(body),
         });
         if (res.status === 404) {
           res = await fetch('/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message }),
+            body: JSON.stringify(body),
           });
           removeTypingIndicator();
           const data = await res.json().catch(() => ({}));

@@ -38,6 +38,10 @@ LLM_MODEL=gpt-4o-mini
 
 Не коммитьте `.env` в репозиторий — в нём хранятся секреты.
 
+При интеграции с **Chatwoot** (webhook на `agent.kn.pe`) добавьте в `.env` переменные из [docs/CHATWOOT-PRE-CHAT-FORM.md](docs/CHATWOOT-PRE-CHAT-FORM.md) (`CHATWOOT_BASE_URL`, `CHATWOOT_ACCOUNT_ID`, `CHATWOOT_API_ACCESS_TOKEN`). Чтобы ответ бота шёл блоками (стриминг), задайте `CHATWOOT_STREAM_REPLY=true`.
+
+Чтобы в веб-чате работала модель **Algolia** (селектор в интерфейсе), добавьте в `.env` на сервере: `ALGOLIA_APPLICATION_ID`, `ALGOLIA_API_KEY` (search-only key). Опционально: `ALGOLIA_AGENT_ID`. По умолчанию используется US-эндпоинт `https://agent-studio.us.algolia.com` (для серверных запросов без Cloudflare challenge). При необходимости EU: `ALGOLIA_AGENT_STUDIO_BASE_URL=https://agent-studio.eu.algolia.com`. После изменения `.env`: `docker compose up -d --force-recreate backend`.
+
 ## 3. Запуск сервисов
 
 Из корня проекта:
@@ -113,6 +117,8 @@ QDRANT_URL=http://localhost:6333 python scripts/index_to_qdrant.py
 ### DNS и HTTPS
 
 - В DNS для **kn.pe** (и при необходимости **www.kn.pe**) укажите A-запись на IP вашего VPS.
+- Для поддоменов **chatwoot.kn.pe** и **agent.kn.pe**: добавьте A-записи на тот же IP; разнесение по поддоменам и конфиги nginx описаны в [docs/subdomains-kn-pe.md](docs/subdomains-kn-pe.md).
+- На **kn.pe** по умолчанию отображается лендинг со списком сервисов (ссылки на Chatwoot и Knowledge base web chat). Файлы лендинга: `nginx/kn.pe-landing/`; на VPS скопируйте их в `/var/www/kn.pe/`.
 - Для HTTPS: получите сертификат (например, `certbot --nginx -d kn.pe`), затем добавьте в `nginx/kn.pe.conf` блок `server { listen 443 ssl; ... }` с путями к сертификату (в файле есть закомментированный пример).
 
 ### Прочее

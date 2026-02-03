@@ -4,10 +4,13 @@ Used by the webhook handler for RAG bot replies and copilot suggestions.
 """
 from __future__ import annotations
 
+import logging
 import os
 from typing import Any
 
 import httpx
+
+logger = logging.getLogger(__name__)
 
 CHATWOOT_BASE_URL = (os.environ.get("CHATWOOT_BASE_URL") or "").rstrip("/")
 CHATWOOT_ACCOUNT_ID = os.environ.get("CHATWOOT_ACCOUNT_ID", "")
@@ -30,6 +33,7 @@ def post_message(
     private=False: customer sees it (bot reply).
     """
     if not is_configured():
+        logger.warning("Chatwoot client: not configured, cannot post message")
         return None
     url = f"{CHATWOOT_BASE_URL}/api/v1/accounts/{CHATWOOT_ACCOUNT_ID}/conversations/{conversation_id}/messages"
     payload: dict[str, Any] = {
@@ -48,6 +52,20 @@ def post_message(
                 },
             )
             r.raise_for_status()
+            logger.info(
+                "Chatwoot client: message posted conversation_id=%s private=%s",
+                conversation_id,
+                private,
+            )
             return r.json()
-        except (httpx.HTTPError, Exception):
+        except httpx.HTTPStatusError as e:
+            logger.error(
+                "Chatwoot client: post_message failed conversation_id=%s status=%s body=%s",
+                conversation_id,
+                e.response.status_code,
+                (e.response.text or "")[:500],
+            )
+            return None
+        except (httpx.HTTPError, Exception) as e:
+            logger.exception("Chatwoot client: post_message error conversation_id=%s %s", conversation_id, e)
             return None

@@ -23,7 +23,8 @@ services:
       - COLLECTION_NAME=papers
       - LLM_API_BASE_URL=${LLM_API_BASE_URL:-}
       - LLM_MODEL=${LLM_MODEL:-gpt-4o-mini}
-    # LLM_API_KEY и OPENAI_API_KEY берутся только из env_file: .env (не перезаписывать из shell)
+      - CHATWOOT_STREAM_REPLY=false
+    # LLM_API_KEY, OPENAI_API_KEY, ALGOLIA_APPLICATION_ID, ALGOLIA_API_KEY — из env_file: .env (добавьте в .env на VPS для модели Algolia)
     depends_on:
       - qdrant
     restart: unless-stopped
